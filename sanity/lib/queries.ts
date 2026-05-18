@@ -18,6 +18,9 @@ export type SiteSettings = {
   siteUrl?: string;
   twitterHandle?: string;
   ogImage?: SanityImageRef;
+  supportEmail?: string;
+  supportPhone?: string;
+  supportHours?: string;
 };
 
 export type PageSectionData = {
@@ -83,7 +86,10 @@ export const siteSettingsQuery = groq`
     siteDescription,
     siteUrl,
     twitterHandle,
-    ogImage{ asset->{_id, url}, alt }
+    ogImage{ asset->{_id, url}, alt },
+    supportEmail,
+    supportPhone,
+    supportHours
   }
 `;
 

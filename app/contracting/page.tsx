@@ -1,34 +1,50 @@
+import { ContractingForm } from "@/components/form/ContractingForm";
+import { FeatureCards } from "@/components/layout/FeatureCards";
+import { FooterStats } from "@/components/layout/FooterStats";
+import { HeaderHero } from "@/components/layout/HeaderHero";
+import { LeftSidebar } from "@/components/layout/LeftSidebar";
+import { RightSidebar } from "@/components/layout/RightSidebar";
 import { sanityFetch } from "@/sanity/lib/live";
-import { type ContractingFormPage, contractingFormPageQuery } from "@/sanity/lib/queries";
+import {
+  type ContractingFormPage,
+  contractingFormPageQuery,
+  type SiteSettings,
+  siteSettingsQuery,
+} from "@/sanity/lib/queries";
 
-/**
- * Phase 1 will build the 4-step form here. For now: placeholder shell that pulls
- * any editable copy already in Sanity (singleton: contractingFormPage).
- */
 export default async function ContractingPage() {
-  const { data: raw } = await sanityFetch({ query: contractingFormPageQuery });
-  const data = raw as ContractingFormPage | null;
+  const [{ data: pageData }, { data: settingsData }] = await Promise.all([
+    sanityFetch({ query: contractingFormPageQuery }),
+    sanityFetch({ query: siteSettingsQuery }),
+  ]);
+  const page = pageData as ContractingFormPage | null;
+  const settings = settingsData as SiteSettings | null;
 
   return (
-    <main className="bg-background text-foreground flex min-h-screen items-center justify-center px-6 py-24">
-      <div className="max-w-2xl text-center">
-        <p className="text-sm tracking-[0.3em] uppercase text-gold/80">
-          {data?.hero?.eyebrow || "Phase 1 placeholder"}
-        </p>
-        <h1 className="font-display mt-4 text-5xl font-bold tracking-tight text-gold sm:text-7xl">
-          {data?.hero?.title || "AEG Contracting"}
-        </h1>
-        <p className="mt-4 text-lg text-muted-foreground">
-          {data?.hero?.tagline || "Build your empire. Legacy starts here."}
-        </p>
-        <p className="mt-12 text-sm text-muted-foreground">
-          The 4-step contracting form will be built in Phase 1. Edit copy at{" "}
-          <a href="/studio/intent/edit/id=contractingFormPage" className="text-gold underline">
-            /studio → Contracting Form Page
-          </a>
-          .
-        </p>
+    <main className="bg-background min-h-screen text-foreground">
+      <HeaderHero
+        eyebrow={page?.hero?.eyebrow}
+        title={page?.hero?.title}
+        tagline={page?.hero?.tagline}
+      />
+
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-6 py-12 lg:grid-cols-[260px_1fr_300px] lg:gap-6">
+        <LeftSidebar />
+
+        <div>
+          <ContractingForm stepsCopy={page?.steps} />
+        </div>
+
+        <RightSidebar />
       </div>
+
+      <FeatureCards cards={page?.featureCards} />
+
+      <FooterStats
+        supportEmail={settings?.supportEmail}
+        supportPhone={settings?.supportPhone}
+        supportHours={settings?.supportHours}
+      />
     </main>
   );
 }
