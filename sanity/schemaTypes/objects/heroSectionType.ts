@@ -1,0 +1,56 @@
+import { StarIcon } from "@sanity/icons";
+import { defineField, defineType } from "sanity";
+
+export const heroSectionType = defineType({
+  name: "heroSection",
+  title: "Hero",
+  type: "object",
+  icon: StarIcon,
+  fields: [
+    defineField({ name: "eyebrow", title: "Eyebrow", type: "string" }),
+    defineField({ name: "title", title: "Title", type: "string" }),
+    defineField({ name: "body", title: "Body", type: "blockContent" }),
+    defineField({ name: "primaryCtaLabel", title: "Primary CTA Label", type: "string" }),
+    defineField({
+      name: "primaryCtaHref",
+      title: "Primary CTA URL",
+      type: "url",
+      validation: (Rule) => Rule.uri({ allowRelative: true }),
+    }),
+    defineField({ name: "secondaryCtaLabel", title: "Secondary CTA Label", type: "string" }),
+    defineField({
+      name: "secondaryCtaHref",
+      title: "Secondary CTA URL",
+      type: "url",
+      validation: (Rule) => Rule.uri({ allowRelative: true }),
+    }),
+    defineField({
+      name: "textAlign",
+      title: "Text Alignment",
+      type: "string",
+      options: {
+        list: [
+          { title: "Center", value: "center" },
+          { title: "Left", value: "left" },
+          { title: "Right", value: "right" },
+        ],
+      },
+      initialValue: "center",
+    }),
+    defineField({
+      name: "image",
+      title: "Hero Image",
+      type: "image",
+      options: { hotspot: true },
+      fields: [defineField({ name: "alt", title: "Alt text", type: "string" })],
+    }),
+  ],
+  preview: {
+    select: { title: "title", eyebrow: "eyebrow" },
+    prepare: ({ title, eyebrow }) => ({
+      title: title || "Untitled Hero",
+      subtitle: eyebrow || "Hero",
+      media: StarIcon,
+    }),
+  },
+});
