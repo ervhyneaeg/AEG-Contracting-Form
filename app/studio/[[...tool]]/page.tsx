@@ -1,16 +1,12 @@
 /**
- * Sanity Studio mounted in the Next.js app at /studio.
- * The catch-all route ensures all Studio sub-paths work.
+ * Sanity Studio mounted in the Next.js app at /studio (Server Component).
+ * Re-exports metadata/viewport from next-sanity, then renders the Client child.
  */
-"use client";
+import { Studio } from "./Studio";
 
-import { NextStudio } from "next-sanity/studio";
-
-import config from "@/sanity.config";
-
-export const dynamic = "force-static";
 export { metadata, viewport } from "next-sanity/studio";
+export const dynamic = "force-static";
 
 export default function StudioPage() {
-  return <NextStudio config={config} />;
+  return <Studio />;
 }
