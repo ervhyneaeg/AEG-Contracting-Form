@@ -41,7 +41,11 @@ export type PageSectionData = {
   textAlign?: "center" | "left" | "right";
   headerLayout?: "center" | "left" | "right" | "split";
   layout?: "grid" | "flex" | "stack" | "horizontal" | "vertical" | "single";
-  columns?: number;
+  // `columns` is overloaded by Sanity schema:
+  //   containerSection.columns  → number (grid column count 1-4)
+  //   rowContainer.columns      → PageSectionData[] (column children)
+  // The renderer dispatches on _type so the meaning is unambiguous at use site.
+  columns?: number | PageSectionData[];
   gap?: string;
   image?: SanityImageRef;
   imageDark?: SanityImageRef;
@@ -59,6 +63,14 @@ export type PageSectionData = {
   items?: PageSectionData[] | Array<{ _key?: string; question?: string; answer?: unknown }>;
   logos?: Array<{ _key?: string; name?: string; href?: string; image?: SanityImageRef }>;
   steps?: Array<{ _key?: string; title?: string; description?: string; icon?: string }>;
+  // Section / Row / Column container fields
+  label?: string;
+  rows?: PageSectionData[];
+  width?: string;
+  customWidth?: number;
+  alignment?: "start" | "center" | "end" | "stretch";
+  justify?: "start" | "center" | "end" | "between" | "around";
+  wrap?: boolean;
   styles?: BlockStyles | null;
 };
 
@@ -120,6 +132,7 @@ export const pageBySlugQuery = groq`
       _type,
       eyebrow,
       title,
+      label,
       body,
       description,
       primaryCtaLabel,
@@ -131,9 +144,33 @@ export const pageBySlugQuery = groq`
       textAlign,
       headerLayout,
       layout,
-      columns,
       gap,
+      alignment,
+      justify,
+      wrap,
+      width,
+      customWidth,
       styles,
+      // Section > Row > Column projections (recursive)
+      rows[]{
+        _key, _type, gap, alignment, justify, wrap, styles,
+        columns[]{
+          _key, _type, width, customWidth, styles,
+          items[]{
+            _key, _type, eyebrow, title, body, description,
+            primaryCtaLabel, primaryCtaHref, secondaryCtaLabel, secondaryCtaHref,
+            paddingTop, paddingBottom, textAlign, layout, gap, styles,
+            image{ asset->{_id, url}, alt },
+            imageDark{ asset->{_id, url}, alt },
+            stats[]{ _key, value, label },
+            features[]{ _key, title, description, icon },
+            testimonials[]{ _key, quote, name, role, rating, avatar{ asset->{_id, url}, alt } },
+            logos[]{ _key, name, href, image{ asset->{_id, url}, alt } },
+            steps[]{ _key, title, description, icon },
+            items[]{ _key, _type, question, answer, eyebrow, title, body }
+          }
+        }
+      },
       image{ asset->{_id, url}, alt },
       imageDark{ asset->{_id, url}, alt },
       stats[]{ _key, value, label },

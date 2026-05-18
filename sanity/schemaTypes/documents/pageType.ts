@@ -37,6 +37,9 @@ export const pageType = defineType({
       title: "Sections",
       type: "array",
       of: [
+        // Structural — recommended top-level wrapper
+        defineArrayMember({ type: "sectionContainer" }),
+        // Direct content sections (also allowed at top level for simple pages)
         defineArrayMember({ type: "heroSection" }),
         defineArrayMember({ type: "richTextSection" }),
         defineArrayMember({ type: "ctaSection" }),

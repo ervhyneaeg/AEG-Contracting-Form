@@ -17,7 +17,9 @@ import {
   CheckCircle2,
   ChevronsUpDown,
   Clipboard,
+  Columns3,
   Crown,
+  Frame,
   Globe,
   HelpCircle,
   Image as ImageIcon,
@@ -28,6 +30,7 @@ import {
   Megaphone,
   Quote,
   Rocket,
+  Rows3,
   ShieldCheck,
   Sparkles,
   Star,
@@ -38,6 +41,7 @@ import { createDataAttribute } from "next-sanity";
 import type { ReactNode } from "react";
 
 import { applyBlockStyles, type BlockStyles } from "@/lib/block-styles";
+import { columnWidthStyle } from "@/lib/column-width";
 import { cn } from "@/lib/utils";
 import { urlFor } from "@/sanity/lib/image";
 
@@ -56,6 +60,7 @@ type PageSection = {
   _type?: string;
   eyebrow?: string;
   title?: string;
+  label?: string;
   body?: unknown;
   description?: string;
   primaryCtaLabel?: string;
@@ -67,8 +72,14 @@ type PageSection = {
   textAlign?: "center" | "left" | "right";
   headerLayout?: "center" | "left" | "right" | "split";
   layout?: "grid" | "flex" | "stack" | "horizontal" | "vertical" | "single";
-  columns?: number;
+  columns?: number | PageSection[];
   gap?: string;
+  alignment?: "start" | "center" | "end" | "stretch";
+  justify?: "start" | "center" | "end" | "between" | "around";
+  wrap?: boolean;
+  width?: string;
+  customWidth?: number;
+  rows?: PageSection[];
   image?: SanityImage;
   imageDark?: SanityImage;
   stats?: Array<{ _key?: string; value?: string; label?: string }>;
@@ -785,7 +796,170 @@ export function PageBuilder({
           }
 
           // -------------------------------------------------------------
-          // Container (recursive)
+          // Section Container (GHL-style) — Phase 1d
+          // -------------------------------------------------------------
+          case "sectionContainer": {
+            const rows = section.rows || [];
+            const hasRows = rows.length > 0;
+            return (
+              <section
+                key={key}
+                data-sanity={sectionAttr}
+                className={cn(
+                  baseSectionClass,
+                  "py-6",
+                  isDraftMode &&
+                    "relative outline outline-2 outline-emerald-500/40 outline-offset-[-1px]",
+                )}
+                style={styleOverrides}
+              >
+                {isDraftMode && (
+                  <p className="mb-2 inline-flex items-center gap-1.5 rounded bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold tracking-[0.2em] uppercase text-emerald-400">
+                    <Frame className="h-3 w-3" />
+                    Section{section.label ? ` · ${section.label}` : ""}
+                  </p>
+                )}
+                {hasRows ? (
+                  <PageBuilder
+                    sections={rows}
+                    documentId={documentId}
+                    documentType={documentType}
+                    isDraftMode={isDraftMode}
+                    pathPrefix={`${prefix}[_key=="${key}"].rows`}
+                    isInner
+                  />
+                ) : (
+                  <SectionPlaceholder
+                    type="Section"
+                    hint="Empty Section — add a Row to start composing this block."
+                    icon={Frame}
+                  />
+                )}
+              </section>
+            );
+          }
+
+          // -------------------------------------------------------------
+          // Row Container — Phase 1d
+          // -------------------------------------------------------------
+          case "rowContainer": {
+            const cols = Array.isArray(section.columns) ? section.columns : [];
+            const hasCols = cols.length > 0;
+            const gap = section.gap || "md";
+            const gapMap: Record<string, string> = {
+              none: "gap-0",
+              xs: "gap-2",
+              sm: "gap-4",
+              md: "gap-6",
+              lg: "gap-8",
+              xl: "gap-12",
+            };
+            const alignMap: Record<string, string> = {
+              start: "items-start",
+              center: "items-center",
+              end: "items-end",
+              stretch: "items-stretch",
+            };
+            const justifyMap: Record<string, string> = {
+              start: "justify-start",
+              center: "justify-center",
+              end: "justify-end",
+              between: "justify-between",
+              around: "justify-around",
+            };
+            const wrap = section.wrap ?? true;
+            const direction = wrap ? "flex-col md:flex-row" : "flex-row";
+            return (
+              <div
+                key={key}
+                data-sanity={sectionAttr}
+                className={cn(
+                  "flex w-full",
+                  direction,
+                  gapMap[gap] || gapMap.md,
+                  alignMap[section.alignment || "stretch"],
+                  justifyMap[section.justify || "start"],
+                  "my-2",
+                  isDraftMode &&
+                    "relative outline outline-2 outline-sky-500/40 outline-offset-[-1px]",
+                )}
+                style={styleOverrides}
+              >
+                {isDraftMode && (
+                  <p className="absolute -top-2 left-2 z-10 inline-flex items-center gap-1.5 rounded bg-sky-500/10 px-2 py-0.5 text-[10px] font-semibold tracking-[0.2em] uppercase text-sky-400">
+                    <Rows3 className="h-3 w-3" />
+                    Row
+                  </p>
+                )}
+                {hasCols ? (
+                  <PageBuilder
+                    sections={cols}
+                    documentId={documentId}
+                    documentType={documentType}
+                    isDraftMode={isDraftMode}
+                    pathPrefix={`${prefix}[_key=="${key}"].columns`}
+                    isInner
+                  />
+                ) : (
+                  <div className="flex-1">
+                    <SectionPlaceholder
+                      type="Row"
+                      hint="Empty Row — add Columns to split this row."
+                      icon={Rows3}
+                    />
+                  </div>
+                )}
+              </div>
+            );
+          }
+
+          // -------------------------------------------------------------
+          // Column Container — Phase 1d
+          // -------------------------------------------------------------
+          case "columnContainer": {
+            const items = (section.items as PageSection[]) || [];
+            const hasItems = items.length > 0;
+            const widthStyle = columnWidthStyle(section.width, section.customWidth);
+            return (
+              <div
+                key={key}
+                data-sanity={sectionAttr}
+                className={cn(
+                  "flex flex-col",
+                  "min-w-0",
+                  isDraftMode &&
+                    "relative outline outline-2 outline-pink-500/40 outline-offset-[-1px]",
+                )}
+                style={{ ...widthStyle, ...styleOverrides }}
+              >
+                {isDraftMode && (
+                  <p className="absolute -top-2 right-2 z-10 inline-flex items-center gap-1.5 rounded bg-pink-500/10 px-2 py-0.5 text-[10px] font-semibold tracking-[0.2em] uppercase text-pink-400">
+                    <Columns3 className="h-3 w-3" />
+                    Column · {section.width || "auto"}
+                  </p>
+                )}
+                {hasItems ? (
+                  <PageBuilder
+                    sections={items}
+                    documentId={documentId}
+                    documentType={documentType}
+                    isDraftMode={isDraftMode}
+                    pathPrefix={`${prefix}[_key=="${key}"].items`}
+                    isInner
+                  />
+                ) : (
+                  <SectionPlaceholder
+                    type="Column"
+                    hint="Drop content elements (Hero, Rich Text, Image, …)"
+                    icon={Columns3}
+                  />
+                )}
+              </div>
+            );
+          }
+
+          // -------------------------------------------------------------
+          // Container (legacy generic container — kept for backward compat)
           // -------------------------------------------------------------
           case "containerSection": {
             const items = (section.items as PageSection[]) || [];
@@ -794,7 +968,7 @@ export function PageBuilder({
             if (empty && !isDraftMode) return null;
 
             const layout = section.layout || "grid";
-            const columns = section.columns || 3;
+            const columns = typeof section.columns === "number" ? section.columns : 3;
             const gap =
               section.gap === "4" ? "gap-4" : section.gap === "8" ? "gap-8" : section.gap === "12" ? "gap-12" : "gap-6";
             const cols =
