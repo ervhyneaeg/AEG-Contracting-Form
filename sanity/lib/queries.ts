@@ -38,14 +38,25 @@ export type PageSectionData = {
   paddingBottom?: number;
   textAlign?: "center" | "left" | "right";
   headerLayout?: "center" | "left" | "right" | "split";
-  layout?: "grid" | "flex" | "stack";
+  layout?: "grid" | "flex" | "stack" | "horizontal" | "vertical" | "single";
   columns?: number;
   gap?: string;
   image?: SanityImageRef;
   imageDark?: SanityImageRef;
   stats?: Array<{ _key?: string; value?: string; label?: string }>;
   features?: Array<{ _key?: string; title?: string; description?: string; icon?: string }>;
-  items?: PageSectionData[];
+  testimonials?: Array<{
+    _key?: string;
+    quote?: string;
+    name?: string;
+    role?: string;
+    rating?: number;
+    avatar?: SanityImageRef;
+  }>;
+  // faq + container both use "items" — discriminated by section _type at render time
+  items?: PageSectionData[] | Array<{ _key?: string; question?: string; answer?: unknown }>;
+  logos?: Array<{ _key?: string; name?: string; href?: string; image?: SanityImageRef }>;
+  steps?: Array<{ _key?: string; title?: string; description?: string; icon?: string }>;
 };
 
 export type Page = {
@@ -123,17 +134,48 @@ export const pageBySlugQuery = groq`
       imageDark{ asset->{_id, url}, alt },
       stats[]{ _key, value, label },
       features[]{ _key, title, description, icon },
+      testimonials[]{
+        _key,
+        quote,
+        name,
+        role,
+        rating,
+        avatar{ asset->{_id, url}, alt }
+      },
+      logos[]{
+        _key,
+        name,
+        href,
+        image{ asset->{_id, url}, alt }
+      },
+      steps[]{
+        _key,
+        title,
+        description,
+        icon
+      },
       items[]{
         _key,
         _type,
+        // FAQ item fields
+        question,
+        answer,
+        // Container item / generic section fields
         eyebrow,
         title,
         body,
         description,
         paddingTop,
         paddingBottom,
+        textAlign,
+        primaryCtaLabel,
+        primaryCtaHref,
+        secondaryCtaLabel,
+        secondaryCtaHref,
         image{ asset->{_id, url}, alt },
-        imageDark{ asset->{_id, url}, alt }
+        imageDark{ asset->{_id, url}, alt },
+        stats[]{ _key, value, label },
+        features[]{ _key, title, description, icon }
       }
     }
   }
