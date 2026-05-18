@@ -23,14 +23,16 @@ export function SectionPlaceholder({
   return (
     <div
       className={cn(
-        "relative flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-gold/25 bg-card/20 px-6 py-12 text-center",
+        "group relative flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-gold/25 bg-card/20 px-6 py-12 text-center transition-all hover:border-gold/55 hover:bg-card/40",
         height,
         className,
       )}
     >
-      {Icon && <Icon className="h-8 w-8 text-gold/40" />}
+      {Icon && (
+        <Icon className="h-8 w-8 text-gold/40 transition-colors group-hover:text-gold/70" />
+      )}
       <div>
-        <p className="text-xs font-semibold tracking-[0.25em] uppercase text-gold/80">
+        <p className="text-xs font-semibold tracking-[0.25em] uppercase text-gold/80 group-hover:text-gold">
           {type}
         </p>
         <p className="mt-1.5 max-w-md text-xs text-muted-foreground">{hint}</p>

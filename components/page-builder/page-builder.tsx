@@ -253,6 +253,21 @@ export function PageBuilder({
     }).toString();
   };
 
+  /**
+   * Build a data-sanity attribute for a *child array* inside a specific
+   * section (e.g. that section's `rows` / `columns` / `items`). Applied to
+   * empty-state placeholders so Sanity's overlay shows "+ Add item" on hover
+   * and the right-click menu offers insertion into that array.
+   */
+  const createChildrenAttr = (key: string | undefined, childPath: string) => {
+    if (!isDraftMode || !documentId || !documentType || !key) return undefined;
+    return createDataAttribute({
+      id: documentId,
+      type: documentType,
+      path: `${prefix}[_key=="${key}"].${childPath}`,
+    }).toString();
+  };
+
   const sectionsContainerAttr =
     isDraftMode && documentId && documentType
       ? createDataAttribute({ id: documentId, type: documentType, path: prefix }).toString()
@@ -679,7 +694,10 @@ export function PageBuilder({
                   description={section.description}
                 />
                 {hasItems ? (
-                  <div className="mx-auto max-w-3xl divide-y divide-gold/15 rounded-2xl border border-gold/15 bg-card/40 px-6">
+                  <div
+                    data-sanity={createChildrenAttr(section._key, "items")}
+                    className="mx-auto max-w-3xl divide-y divide-gold/15 rounded-2xl border border-gold/15 bg-card/40 px-6"
+                  >
                     {items.map((item) => (
                       <details
                         key={item._key}
@@ -698,11 +716,13 @@ export function PageBuilder({
                     ))}
                   </div>
                 ) : (
-                  <SectionPlaceholder
-                    type="FAQ"
-                    hint="Add question/answer pairs in the studio."
-                    icon={HelpCircle}
-                  />
+                  <div data-sanity={createChildrenAttr(section._key, "items")}>
+                    <SectionPlaceholder
+                      type="FAQ"
+                      hint="Right-click (or hover for +) to add question/answer pairs."
+                      icon={HelpCircle}
+                    />
+                  </div>
                 )}
               </section>
             );
@@ -869,11 +889,13 @@ export function PageBuilder({
                     isInner
                   />
                 ) : (
-                  <SectionPlaceholder
-                    type="Section"
-                    hint="Empty Section — add a Row to start composing this block."
-                    icon={Frame}
-                  />
+                  <div data-sanity={createChildrenAttr(section._key, "rows")}>
+                    <SectionPlaceholder
+                      type="Section"
+                      hint="Right-click here (or hover for +) to add a Row."
+                      icon={Frame}
+                    />
+                  </div>
                 )}
               </section>
             );
@@ -941,10 +963,13 @@ export function PageBuilder({
                     isInner
                   />
                 ) : (
-                  <div className="flex-1">
+                  <div
+                    data-sanity={createChildrenAttr(section._key, "columns")}
+                    className="flex-1"
+                  >
                     <SectionPlaceholder
                       type="Row"
-                      hint="Empty Row — add Columns to split this row."
+                      hint="Right-click here (or hover for +) to add a Column."
                       icon={Rows3}
                     />
                   </div>
@@ -988,11 +1013,13 @@ export function PageBuilder({
                     isInner
                   />
                 ) : (
-                  <SectionPlaceholder
-                    type="Column"
-                    hint="Drop content elements (Hero, Rich Text, Image, …)"
-                    icon={Columns3}
-                  />
+                  <div data-sanity={createChildrenAttr(section._key, "items")}>
+                    <SectionPlaceholder
+                      type="Column"
+                      hint="Right-click (or hover for +) to drop content elements here."
+                      icon={Columns3}
+                    />
+                  </div>
                 )}
               </div>
             );
@@ -1055,11 +1082,13 @@ export function PageBuilder({
                     />
                   </div>
                 ) : (
-                  <SectionPlaceholder
-                    type="Container"
-                    hint="Drop sections inside this container in the studio."
-                    icon={LayoutGrid}
-                  />
+                  <div data-sanity={createChildrenAttr(section._key, "items")}>
+                    <SectionPlaceholder
+                      type="Container"
+                      hint="Right-click (or hover for +) to drop sections inside this container."
+                      icon={LayoutGrid}
+                    />
+                  </div>
                 )}
               </section>
             );
@@ -1326,12 +1355,14 @@ export function PageBuilder({
                     ))}
                   </ListTag>
                 ) : (
-                  <SectionPlaceholder
-                    type="Bullet List"
-                    hint="Add list items in the studio."
-                    icon={List}
-                    height="min-h-[100px]"
-                  />
+                  <div data-sanity={createChildrenAttr(section._key, "items")}>
+                    <SectionPlaceholder
+                      type="Bullet List"
+                      hint="Right-click (or hover for +) to add list items."
+                      icon={List}
+                      height="min-h-[100px]"
+                    />
+                  </div>
                 )}
               </div>
             );
@@ -1368,11 +1399,13 @@ export function PageBuilder({
                         isInner
                       />
                     ) : (
-                      <SectionPlaceholder
-                        type="Form"
-                        hint="Drop Text Input / Select / Checkbox / Submit Button inside."
-                        icon={Square}
-                      />
+                      <div data-sanity={createChildrenAttr(section._key, "items")}>
+                        <SectionPlaceholder
+                          type="Form"
+                          hint="Right-click (or hover for +) to drop Text Input / Select / Checkbox / Submit Button inside."
+                          icon={Square}
+                        />
+                      </div>
                     )}
                   </FormContainer>
                 ) : (
