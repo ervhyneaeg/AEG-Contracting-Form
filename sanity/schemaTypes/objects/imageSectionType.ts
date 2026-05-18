@@ -1,6 +1,8 @@
 import { ImageIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 
+import { blockStylesField } from "./blockStylesField";
+
 export const imageSectionType = defineType({
   name: "imageSection",
   title: "Image",
@@ -16,6 +18,7 @@ export const imageSectionType = defineType({
     }),
     defineField({ name: "paddingTop", title: "Padding Top", type: "number", initialValue: 0 }),
     defineField({ name: "paddingBottom", title: "Padding Bottom", type: "number", initialValue: 0 }),
+    blockStylesField,
   ],
   preview: { select: { media: "image", title: "image.alt" } },
 });

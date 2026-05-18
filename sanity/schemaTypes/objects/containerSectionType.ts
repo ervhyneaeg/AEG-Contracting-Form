@@ -1,6 +1,8 @@
 import { StackCompactIcon } from "@sanity/icons";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
+import { blockStylesField } from "./blockStylesField";
+
 export const containerSectionType = defineType({
   name: "containerSection",
   title: "Container",
@@ -59,6 +61,7 @@ export const containerSectionType = defineType({
     }),
     defineField({ name: "paddingTop", title: "Padding Top", type: "number", initialValue: 64 }),
     defineField({ name: "paddingBottom", title: "Padding Bottom", type: "number", initialValue: 64 }),
+    blockStylesField,
   ],
   preview: {
     select: { title: "title", eyebrow: "eyebrow" },

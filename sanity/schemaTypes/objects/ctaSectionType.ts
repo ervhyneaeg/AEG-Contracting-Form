@@ -1,6 +1,8 @@
 import { RocketIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 
+import { blockStylesField } from "./blockStylesField";
+
 export const ctaSectionType = defineType({
   name: "ctaSection",
   title: "Call to Action",
@@ -24,6 +26,7 @@ export const ctaSectionType = defineType({
       type: "url",
       validation: (Rule) => Rule.uri({ allowRelative: true }),
     }),
+    blockStylesField,
   ],
   preview: {
     select: { title: "title", eyebrow: "eyebrow" },

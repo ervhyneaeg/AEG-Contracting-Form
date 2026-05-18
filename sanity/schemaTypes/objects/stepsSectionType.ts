@@ -1,6 +1,8 @@
 import { TiersIcon } from "@sanity/icons";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
+import { blockStylesField } from "./blockStylesField";
+
 export const stepsSectionType = defineType({
   name: "stepsSection",
   title: "Process / Steps",
@@ -58,6 +60,7 @@ export const stepsSectionType = defineType({
     }),
     defineField({ name: "paddingTop", title: "Padding Top", type: "number", initialValue: 80 }),
     defineField({ name: "paddingBottom", title: "Padding Bottom", type: "number", initialValue: 80 }),
+    blockStylesField,
   ],
   preview: {
     select: { title: "title", eyebrow: "eyebrow" },

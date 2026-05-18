@@ -1,6 +1,8 @@
 import { StarIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
 
+import { blockStylesField } from "./blockStylesField";
+
 export const heroSectionType = defineType({
   name: "heroSection",
   title: "Hero",
@@ -44,6 +46,7 @@ export const heroSectionType = defineType({
       options: { hotspot: true },
       fields: [defineField({ name: "alt", title: "Alt text", type: "string" })],
     }),
+    blockStylesField,
   ],
   preview: {
     select: { title: "title", eyebrow: "eyebrow" },

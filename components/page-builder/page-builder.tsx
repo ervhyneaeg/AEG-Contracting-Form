@@ -37,6 +37,7 @@ import {
 import { createDataAttribute } from "next-sanity";
 import type { ReactNode } from "react";
 
+import { applyBlockStyles, type BlockStyles } from "@/lib/block-styles";
 import { cn } from "@/lib/utils";
 import { urlFor } from "@/sanity/lib/image";
 
@@ -83,6 +84,7 @@ type PageSection = {
   logos?: Array<{ _key?: string; name?: string; href?: string; image?: SanityImage }>;
   steps?: Array<{ _key?: string; title?: string; description?: string; icon?: string }>;
   items?: PageSection[] | FaqItem[];
+  styles?: BlockStyles | null;
 };
 
 type PageBuilderProps = {
@@ -227,6 +229,7 @@ export function PageBuilder({
       {sections.map((section) => {
         const key = section._key || "unknown";
         const sectionAttr = createSectionAttr(section._key);
+        const styleOverrides = applyBlockStyles(section.styles);
 
         switch (section._type) {
           // -------------------------------------------------------------
@@ -240,7 +243,7 @@ export function PageBuilder({
                   key={key}
                   data-sanity={sectionAttr}
                   className="mx-auto flex w-full max-w-container items-center px-6"
-                  style={{ height }}
+                  style={{ height, ...styleOverrides }}
                 >
                   <div className="flex w-full items-center gap-3 text-[10px] tracking-[0.3em] uppercase text-gold/40">
                     <span className="h-px flex-1 bg-gold/15" />
@@ -276,6 +279,7 @@ export function PageBuilder({
                 style={{
                   paddingTop: section.paddingTop ?? 80,
                   paddingBottom: section.paddingBottom ?? 80,
+                  ...styleOverrides,
                 }}
               >
                 {empty ? (
@@ -320,7 +324,12 @@ export function PageBuilder({
             if (empty && !isDraftMode) return null;
 
             return (
-              <section key={key} data-sanity={sectionAttr} className={cn(baseSectionClass, "py-20")}>
+              <section
+                key={key}
+                data-sanity={sectionAttr}
+                className={cn(baseSectionClass, "py-20")}
+                style={styleOverrides}
+              >
                 {empty ? (
                   <SectionPlaceholder
                     type="Call to Action"
@@ -377,6 +386,7 @@ export function PageBuilder({
                 style={{
                   paddingTop: section.paddingTop ?? 0,
                   paddingBottom: section.paddingBottom ?? 0,
+                  ...styleOverrides,
                 }}
               >
                 {imgSrc ? (
@@ -413,6 +423,7 @@ export function PageBuilder({
                 style={{
                   paddingTop: section.paddingTop ?? 48,
                   paddingBottom: section.paddingBottom ?? 48,
+                  ...styleOverrides,
                 }}
               >
                 <SectionHeader eyebrow={section.eyebrow} title={section.title} />
@@ -456,6 +467,7 @@ export function PageBuilder({
                 style={{
                   paddingTop: section.paddingTop ?? 64,
                   paddingBottom: section.paddingBottom ?? 64,
+                  ...styleOverrides,
                 }}
               >
                 <SectionHeader
@@ -510,6 +522,7 @@ export function PageBuilder({
                 style={{
                   paddingTop: section.paddingTop ?? 80,
                   paddingBottom: section.paddingBottom ?? 80,
+                  ...styleOverrides,
                 }}
               >
                 <SectionHeader
@@ -606,6 +619,7 @@ export function PageBuilder({
                 style={{
                   paddingTop: section.paddingTop ?? 80,
                   paddingBottom: section.paddingBottom ?? 80,
+                  ...styleOverrides,
                 }}
               >
                 <SectionHeader
@@ -659,6 +673,7 @@ export function PageBuilder({
                 style={{
                   paddingTop: section.paddingTop ?? 64,
                   paddingBottom: section.paddingBottom ?? 64,
+                  ...styleOverrides,
                 }}
               >
                 <SectionHeader eyebrow={section.eyebrow} title={section.title} />
@@ -717,6 +732,7 @@ export function PageBuilder({
                 style={{
                   paddingTop: section.paddingTop ?? 80,
                   paddingBottom: section.paddingBottom ?? 80,
+                  ...styleOverrides,
                 }}
               >
                 <SectionHeader
@@ -804,6 +820,7 @@ export function PageBuilder({
                 style={{
                   paddingTop: section.paddingTop ?? 64,
                   paddingBottom: section.paddingBottom ?? 64,
+                  ...styleOverrides,
                 }}
               >
                 <SectionHeader
@@ -869,6 +886,7 @@ export function PageBuilder({
                   "flex items-center py-12",
                   empty ? "min-h-[420px]" : "min-h-[calc(100vh-8rem)]",
                 )}
+                style={styleOverrides}
               >
                 {empty ? (
                   <SectionPlaceholder

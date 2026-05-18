@@ -1,6 +1,8 @@
 import { BarChartIcon } from "@sanity/icons";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
+import { blockStylesField } from "./blockStylesField";
+
 export const statsSectionType = defineType({
   name: "statsSection",
   title: "Stats Strip",
@@ -31,6 +33,7 @@ export const statsSectionType = defineType({
     }),
     defineField({ name: "paddingTop", title: "Padding Top", type: "number", initialValue: 48 }),
     defineField({ name: "paddingBottom", title: "Padding Bottom", type: "number", initialValue: 48 }),
+    blockStylesField,
   ],
   preview: {
     select: { title: "title", eyebrow: "eyebrow" },

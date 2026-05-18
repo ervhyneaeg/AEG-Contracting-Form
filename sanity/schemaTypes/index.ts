@@ -1,6 +1,7 @@
 import { type SchemaTypeDefinition } from "sanity";
 
 import { blockContentType } from "./objects/blockContentType";
+import { blockStylesType } from "./objects/blockStylesType";
 import { contractingFormPageType } from "./documents/contractingFormPageType";
 import { containerSectionType } from "./objects/containerSectionType";
 import { ctaSectionType } from "./objects/ctaSectionType";
@@ -40,5 +41,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
 
     // Supporting
     blockContentType,
+    blockStylesType,
   ],
 };

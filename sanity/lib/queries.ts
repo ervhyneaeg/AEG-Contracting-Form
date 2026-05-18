@@ -1,5 +1,7 @@
 import { groq } from "next-sanity";
 
+import type { BlockStyles } from "@/lib/block-styles";
+
 // ============================================================
 // Query result types
 // (Hand-typed for Phase 0. Replace with sanity-typegen output once enabled.)
@@ -57,6 +59,7 @@ export type PageSectionData = {
   items?: PageSectionData[] | Array<{ _key?: string; question?: string; answer?: unknown }>;
   logos?: Array<{ _key?: string; name?: string; href?: string; image?: SanityImageRef }>;
   steps?: Array<{ _key?: string; title?: string; description?: string; icon?: string }>;
+  styles?: BlockStyles | null;
 };
 
 export type Page = {
@@ -130,6 +133,7 @@ export const pageBySlugQuery = groq`
       layout,
       columns,
       gap,
+      styles,
       image{ asset->{_id, url}, alt },
       imageDark{ asset->{_id, url}, alt },
       stats[]{ _key, value, label },
@@ -172,6 +176,7 @@ export const pageBySlugQuery = groq`
         primaryCtaHref,
         secondaryCtaLabel,
         secondaryCtaHref,
+        styles,
         image{ asset->{_id, url}, alt },
         imageDark{ asset->{_id, url}, alt },
         stats[]{ _key, value, label },
