@@ -52,6 +52,8 @@ export const pageType = defineType({
         defineArrayMember({ type: "stepsSection" }),
         defineArrayMember({ type: "containerSection" }),
         defineArrayMember({ type: "spacerSection" }),
+        // Standalone atomic elements (handy for simple pages)
+        defineArrayMember({ type: "formContainerElement" }),
       ],
       description: "Add and reorder the sections rendered on this page.",
     }),

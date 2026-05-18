@@ -71,6 +71,38 @@ export type PageSectionData = {
   alignment?: "start" | "center" | "end" | "stretch";
   justify?: "start" | "center" | "end" | "between" | "around";
   wrap?: boolean;
+  // Atomic element fields (Phase 1e)
+  text?: string;
+  level?: "h1" | "h2" | "h3" | "h4";
+  tone?: "gold-gradient" | "gold" | "foreground" | "muted";
+  size?: "sm" | "base" | "lg" | "xl" | "md";
+  kind?: "link" | "submit";
+  href?: string;
+  newTab?: boolean;
+  variant?: "primary" | "outline" | "ghost" | "subtle" | "link";
+  fullWidth?: boolean;
+  icon?: string;
+  linkLabel?: string;
+  linkHref?: string;
+  hoverable?: boolean;
+  style?: "bullet" | "numbered" | "check" | "star" | "gold-dot";
+  name?: string;
+  required?: boolean;
+  placeholder?: string;
+  helpText?: string;
+  defaultValue?: string;
+  inputType?: "text" | "email" | "tel" | "number" | "password" | "url";
+  minLength?: number;
+  maxLength?: number;
+  lineCount?: number;
+  orientation?: "horizontal" | "vertical";
+  options?: Array<{ _key?: string; value?: string; label?: string }>;
+  checkedLabel?: string;
+  formKey?: string;
+  submitLabel?: string;
+  successMessage?: string;
+  errorMessage?: string;
+  notifyEmail?: string;
   styles?: BlockStyles | null;
 };
 
@@ -160,6 +192,13 @@ export const pageBySlugQuery = groq`
             _key, _type, eyebrow, title, body, description,
             primaryCtaLabel, primaryCtaHref, secondaryCtaLabel, secondaryCtaHref,
             paddingTop, paddingBottom, textAlign, layout, gap, styles,
+            // Atomic element fields (Phase 1e)
+            text, level, tone, size, kind, href, newTab, variant, fullWidth, icon,
+            linkLabel, linkHref, hoverable, style,
+            name, required, placeholder, helpText, defaultValue,
+            inputType, minLength, maxLength, lineCount, orientation, checkedLabel,
+            formKey, submitLabel, successMessage, errorMessage, notifyEmail,
+            options[]{ _key, value, label },
             image{ asset->{_id, url}, alt },
             imageDark{ asset->{_id, url}, alt },
             stats[]{ _key, value, label },
@@ -167,7 +206,15 @@ export const pageBySlugQuery = groq`
             testimonials[]{ _key, quote, name, role, rating, avatar{ asset->{_id, url}, alt } },
             logos[]{ _key, name, href, image{ asset->{_id, url}, alt } },
             steps[]{ _key, title, description, icon },
-            items[]{ _key, _type, question, answer, eyebrow, title, body }
+            // Bullet list items / form container items / FAQ items
+            items[]{
+              _key, _type,
+              text, level, tone, size, kind, href, variant, fullWidth, icon,
+              label, name, required, placeholder, helpText, defaultValue,
+              inputType, minLength, maxLength, lineCount, orientation, checkedLabel,
+              options[]{ _key, value, label },
+              question, answer, eyebrow, title, body, styles
+            }
           }
         }
       },

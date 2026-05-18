@@ -98,6 +98,31 @@ export const submissionFiles = pgTable(
 export type SubmissionFile = typeof submissionFiles.$inferSelect;
 
 /**
+ * Generic submissions from editor-built forms (Phase 1e formContainerElement).
+ * `form_key` matches the formContainerElement.formKey in Sanity.
+ */
+export const formSubmissions = pgTable(
+  "form_submissions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    formKey: text("form_key").notNull(),
+    payload: jsonb("payload").$type<Record<string, unknown>>().notNull(),
+    ip: inet("ip"),
+    userAgent: text("user_agent"),
+    referer: text("referer"),
+    submittedAt: timestamp("submitted_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [
+    index("form_submissions_key_idx").on(t.formKey),
+    index("form_submissions_submitted_at_idx").on(t.submittedAt),
+  ],
+);
+
+export type FormSubmission = typeof formSubmissions.$inferSelect;
+
+/**
  * Append-only audit trail (step saved, magic-link sent, status changed, etc.).
  */
 export const auditLog = pgTable(

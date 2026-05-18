@@ -43,10 +43,19 @@ export const columnContainerType = defineType({
       description: "Content elements stacked inside this column.",
       type: "array",
       of: [
+        // Content elements
+        defineArrayMember({ type: "headingElement" }),
+        defineArrayMember({ type: "paragraphElement" }),
+        defineArrayMember({ type: "buttonElement" }),
+        defineArrayMember({ type: "cardElement" }),
+        defineArrayMember({ type: "bulletListElement" }),
+        defineArrayMember({ type: "imageSection" }),
+        // Form
+        defineArrayMember({ type: "formContainerElement" }),
+        // Full section blocks
         defineArrayMember({ type: "heroSection" }),
         defineArrayMember({ type: "richTextSection" }),
         defineArrayMember({ type: "ctaSection" }),
-        defineArrayMember({ type: "imageSection" }),
         defineArrayMember({ type: "statsSection" }),
         defineArrayMember({ type: "featureCardsSection" }),
         defineArrayMember({ type: "testimonialsSection" }),
